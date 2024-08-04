@@ -1,0 +1,58 @@
+@use 'sass:map';
+
+:root {
+  --el-color-primary: #3360fd;
+  --el-color-primary-light-3: #3360fd;
+}
+
+// 颜色定义规范
+$color-bg: #fff;
+$color-theme: #3360fd;
+$color-bg-chat: #fff;
+$color-chat-theme: #2e67fa;
+
+//字体定义规范;
+$font-size: 14px;
+$font-color: #333;
+$font-color-light: #666;
+
+/* 不换行 */
+@mixin nowrap {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-center-h {
+  display: flex;
+  align-items: center;
+}
+
+@mixin flex-center-v {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  justify-content: space-between;
+}
+
+@mixin textoverflow($clamp: 1, $lineHeight: 20px) {
+  -webkit-line-clamp: $clamp;
+  line-height: $lineHeight;
+  max-height: calc($lineHeight * $clamp);
+  display: block;
+  display: -webkit-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -o-text-overflow: ellipsis;
+  -webkit-box-orient: vertical;
+}

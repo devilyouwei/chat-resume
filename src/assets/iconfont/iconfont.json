@@ -1,0 +1,86 @@
+{
+  "id": "4602642",
+  "name": "qf",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "2374238",
+      "name": "地区",
+      "font_class": "diqu",
+      "unicode": "e9c4",
+      "unicode_decimal": 59844
+    },
+    {
+      "icon_id": "30583800",
+      "name": "产品-半导体材料",
+      "font_class": "chanpin-bandaoticailiao",
+      "unicode": "e63f",
+      "unicode_decimal": 58943
+    },
+    {
+      "icon_id": "649320",
+      "name": "合作_实心",
+      "font_class": "hezuoshixin",
+      "unicode": "e63c",
+      "unicode_decimal": 58940
+    },
+    {
+      "icon_id": "825166",
+      "name": "电话",
+      "font_class": "dianhua",
+      "unicode": "e624",
+      "unicode_decimal": 58916
+    },
+    {
+      "icon_id": "2252534",
+      "name": "公司",
+      "font_class": "gongsi",
+      "unicode": "e6ef",
+      "unicode_decimal": 59119
+    },
+    {
+      "icon_id": "4361001",
+      "name": "邮箱",
+      "font_class": "youxiang",
+      "unicode": "e600",
+      "unicode_decimal": 58880
+    },
+    {
+      "icon_id": "5736543",
+      "name": "科学技术-55",
+      "font_class": "kexuejishu-",
+      "unicode": "e9b0",
+      "unicode_decimal": 59824
+    },
+    {
+      "icon_id": "7682480",
+      "name": "时间",
+      "font_class": "shijian",
+      "unicode": "e62a",
+      "unicode_decimal": 58922
+    },
+    {
+      "icon_id": "10294637",
+      "name": "盒子标签",
+      "font_class": "boxtag",
+      "unicode": "e652",
+      "unicode_decimal": 58962
+    },
+    {
+      "icon_id": "12990742",
+      "name": "人",
+      "font_class": "ren-",
+      "unicode": "e61b",
+      "unicode_decimal": 58907
+    },
+    {
+      "icon_id": "29146374",
+      "name": "产业链",
+      "font_class": "chanyelian1",
+      "unicode": "e60f",
+      "unicode_decimal": 58895
+    }
+  ]
+}

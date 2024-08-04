@@ -1,0 +1,560 @@
+@import url('../iconfont/iconfont.css');
+
+/* -------------reset start------------- */
+/* 禁用iPhone中Safari的字号自动调整 */
+html {
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  /* 解决IOS默认滑动很卡的情况 */
+  /* -webkit-overflow-scrolling : touch;  */
+}
+
+/* 禁止缩放表单 */
+input[type='submit'],
+input[type='reset'],
+input[type='button'],
+input {
+  resize: none;
+  border: none;
+}
+
+body {
+  /* 进制浏览器下拉时 弹性下拉效果 */
+  overscroll-behavior: none;
+  margin: 0;
+}
+
+/* 取消链接高亮  */
+a {
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  text-decoration: none;
+  box-sizing: border-box;
+
+  &:hover {
+    text-decoration: none;
+  }
+}
+
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video,
+input {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font-weight: normal;
+  vertical-align: baseline;
+}
+
+/* 设置HTML5元素为块 */
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+menu,
+nav,
+section {
+  display: block;
+}
+
+em,
+i {
+  font-style: normal;
+}
+
+ul,
+li {
+  list-style-type: none;
+}
+
+strong {
+  font-weight: normal;
+}
+
+a {
+  text-decoration: none;
+  color: #969696;
+  cursor: pointer;
+}
+
+a:hover {
+  text-decoration: none;
+}
+
+ul,
+ol {
+  list-style: none;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-size: 100%;
+  line-height: 1em;
+}
+
+img {
+  border: none;
+}
+
+blockquote,
+q {
+  quotes: none;
+}
+
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+  content: none;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+html,
+body,
+body .app {
+  font-family: Arial, Helvetica, 'STHeiti STXihei', 'Microsoft YaHei', Tohoma, sans-serif;
+  background-color: $color-bg;
+  font-size: $font-size;
+  color: $font-color;
+}
+
+/* -------------reset end------------- */
+
+/* -------------common start------------- */
+.clearfix {
+  zoom: 1;
+
+  &::after {
+    content: '';
+    display: block;
+    height: 0;
+    line-height: 0;
+    visibility: hidden;
+    clear: both;
+  }
+}
+
+.over-hidden {
+  overflow: hidden;
+}
+
+.nowrap {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 自定义滚动条样式 */
+/* 滚动条整体样式 */
+::-webkit-scrollbar {
+  width: 2px;
+  /* 宽度 */
+  height: 2px;
+  /* 高度 */
+}
+
+/* 滚动条轨道样式 */
+::-webkit-scrollbar-track {
+  background-color: transparent;
+  /* 轨道背景色 */
+}
+
+/* 滚动条滑块样式 */
+::-webkit-scrollbar-thumb {
+  background-color: rgba(33, 33, 33, 0.3);
+  /* 滑块颜色,半透明 */
+  border-radius: 4px;
+  /* 滑块圆角 */
+}
+
+/* 滚动条在没有滚动时隐藏 */
+.scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* 滚动时显示滚动条 */
+.scrollbar:hover::-webkit-scrollbar {
+  display: block;
+}
+
+/* -------------common end------------- */
+
+/* -------------设置版心宽度 start------------- */
+.container {
+  width: 1600px;
+  margin: 0 auto;
+}
+
+/* -------------设置版心宽度 end------------- */
+
+.search-pop.el-popper.is-light {
+  width: 1430px !important;
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.4);
+
+  .el-popper__arrow {
+    display: none;
+  }
+}
+
+.upload-wrap {
+
+  .el-upload,
+  .el-upload-dragger {
+    width: 100%;
+    height: 100%;
+    padding: 30px;
+    box-sizing: border-box;
+  }
+
+  .el-upload:focus .el-upload-dragger {
+    color: #333;
+    border-color: #333;
+  }
+
+  .el-upload-dragger {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent;
+  }
+}
+
+.widget-tip.el-popper {
+  border-color: #b3b6bc !important;
+  background: #b3b6bc !important;
+
+  .el-popper__arrow:before {
+    display: none;
+  }
+}
+
+.tabs {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 70px;
+
+  span {
+    height: 50px;
+    font-size: 24px;
+    line-height: 50px;
+    color: $font-color;
+    text-align: center;
+    cursor: pointer;
+    border-bottom: 4px solid #3360FD;
+
+    &.active {
+      color: #fff;
+      background: $color-theme;
+    }
+  }
+}
+
+.fp-watermark {
+  display: none !important;
+}
+
+
+/*base code*/
+.animated {
+  -webkit-animation-duration: 1s;
+  animation-duration: 1s;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+}
+
+.animated.infinite {
+  -webkit-animation-iteration-count: infinite;
+  animation-iteration-count: infinite;
+}
+
+.animated.hinge {
+  -webkit-animation-duration: 2s;
+  animation-duration: 2s;
+}
+
+/*the animation definition*/
+@-webkit-keyframes fadeInLeft {
+  0% {
+    opacity: 0;
+    -webkit-transform: translate3d(-100%, 0, 0);
+    transform: translate3d(-100%, 0, 0)
+  }
+
+  100% {
+    opacity: 1;
+    -webkit-transform: none;
+    transform: none
+  }
+}
+
+@keyframes fadeInLeft {
+  0% {
+    opacity: 0;
+    -webkit-transform: translate3d(-100%, 0, 0);
+    -ms-transform: translate3d(-100%, 0, 0);
+    transform: translate3d(-100%, 0, 0)
+  }
+
+  100% {
+    opacity: 1;
+    -webkit-transform: none;
+    -ms-transform: none;
+    transform: none
+  }
+}
+
+.fadeInLeft {
+  -webkit-animation-name: fadeInLeft;
+  animation-name: fadeInLeft
+}
+
+.mt-100 {
+  margin-top: 100px;
+}
+
+.menu-pop {
+  display: flex;
+  flex-direction: column;
+  width: 230px !important;
+  padding: 20px !important;
+
+  span {
+    margin-bottom: 20px;
+    font-weight: 500;
+    font-size: 22px;
+    color: $font-color;
+    line-height: 22px;
+    cursor: pointer;
+
+    &:hover,
+    &.active,
+    &:active {
+      color: $color-theme;
+    }
+  }
+}
+
+
+/* chat markdown start  */
+.default-theme {
+  p {
+    font-size: 16px;
+  }
+
+  ol li,
+  ul li,
+  pre code {
+    font-size: 16px;
+  }
+
+  pre::before {
+    background-size: 55px;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    margin: 20px 12px 0;
+  }
+
+  h1 {
+    font-size: 20px;
+  }
+
+  h2 {
+    font-size: 18px;
+  }
+
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-size: 16px;
+  }
+
+  strong {
+    font-weight: 700;
+  }
+}
+
+/* chat markdown end  */
+
+
+.el-textarea textarea {
+  resize: none;
+}
+
+.side-btn {
+  position: absolute;
+  left: 0;
+  top: calc(50vh - 70px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  width: 50px;
+  height: 140px;
+  padding: 18px 16px;
+  font-size: 18px;
+  color: #333333;
+  border-radius: 0px 8px 8px 0px;
+  border: 1px solid #C8D4FF;
+  background: linear-gradient(180deg, #FFFFFF 0%, #DEE9FF 100%);
+  box-sizing: border-box;
+  cursor: pointer;
+
+  span {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 30px;
+    height: 30px;
+
+    img {
+      width: 100%;
+      height: 100%;
+    }
+  }
+}
+
+
+.no-data {
+  width: 100%;
+  padding: 40px 0;
+  text-align: center;
+
+  &.no-padding {
+    padding: 0;
+  }
+}
+
+/* HTML: <div class="loader"></div> */
+.loader {
+  margin: 10px auto;
+  width: 30px;
+  aspect-ratio: 2;
+  --_g: no-repeat radial-gradient(circle closest-side, #666 90%, #0000);
+  background:
+    var(--_g) 0% 50%,
+    var(--_g) 50% 50%,
+    var(--_g) 100% 50%;
+  background-size: calc(100%/3) 50%;
+  animation: l3 1s infinite linear;
+}
+
+@keyframes l3 {
+  20% {
+    background-position: 0% 0%, 50% 50%, 100% 50%
+  }
+
+  40% {
+    background-position: 0% 100%, 50% 0%, 100% 50%
+  }
+
+  60% {
+    background-position: 0% 50%, 50% 100%, 100% 0%
+  }
+
+  80% {
+    background-position: 0% 50%, 50% 50%, 100% 100%
+  }
+}
+
+.card .detail li i.high {
+  color: $color-theme;
+}
