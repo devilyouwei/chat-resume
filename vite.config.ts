@@ -72,7 +72,7 @@ export default defineConfig(({ mode }) => {
     },
     //静态资源服务的文件夹
     publicDir: "public",
-    base: "/chat-resume/",
+    base: "/",
     assetsInclude: "",
     logLevel: "info",
     clearScreen: false,
