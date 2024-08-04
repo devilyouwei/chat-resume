@@ -1,32 +1,36 @@
-import fs from 'fs'
-import { defineConfig, loadEnv } from 'vite'
-import vue from '@vitejs/plugin-vue'
-import { resolve } from 'path'
-import AutoImport from 'unplugin-auto-import/vite'
-import Components from 'unplugin-vue-components/vite'
-import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
-import { visualizer } from 'rollup-plugin-visualizer'
-import viteCompression from 'vite-plugin-compression'
-import progress from 'vite-plugin-progress'
-import { chunkSplitPlugin } from 'vite-plugin-chunk-split'
+import fs from "fs";
+import { defineConfig, loadEnv } from "vite";
+import vue from "@vitejs/plugin-vue";
+import { resolve } from "path";
+import AutoImport from "unplugin-auto-import/vite";
+import Components from "unplugin-vue-components/vite";
+import { ElementPlusResolver } from "unplugin-vue-components/resolvers";
+import { visualizer } from "rollup-plugin-visualizer";
+import viteCompression from "vite-plugin-compression";
+import progress from "vite-plugin-progress";
+import { chunkSplitPlugin } from "vite-plugin-chunk-split";
 
-import vueJsx from '@vitejs/plugin-vue-jsx'
-import VueDevTools from 'vite-plugin-vue-devtools'
+import vueJsx from "@vitejs/plugin-vue-jsx";
+import VueDevTools from "vite-plugin-vue-devtools";
 
-import postcsspxtoviewport from 'postcss-px-to-viewport';
+import postcsspxtoviewport from "postcss-px-to-viewport";
 
-import topLevelAwait from 'vite-plugin-top-level-await'
+import topLevelAwait from "vite-plugin-top-level-await";
 
-const optimizeDepsElementPlusIncludes = ['element-plus/es']
+const optimizeDepsElementPlusIncludes = ["element-plus/es"];
 
-fs.readdirSync('node_modules/element-plus/es/components').map((dirname) => {
-  fs.access(`node_modules/element-plus/es/components/${dirname}/style/css.mjs`, (err) => {
-    if (!err) {
-      optimizeDepsElementPlusIncludes.push(`element-plus/es/components/${dirname}/style/css`)
+fs.readdirSync("node_modules/element-plus/es/components").map((dirname) => {
+  fs.access(
+    `node_modules/element-plus/es/components/${dirname}/style/css.mjs`,
+    (err) => {
+      if (!err) {
+        optimizeDepsElementPlusIncludes.push(
+          `element-plus/es/components/${dirname}/style/css`
+        );
+      }
     }
-  })
-})
-
+  );
+});
 
 export default defineConfig(({ mode }) => {
   const root = process.cwd();
@@ -37,10 +41,10 @@ export default defineConfig(({ mode }) => {
       vue(),
       vueJsx(),
       AutoImport({
-        resolvers: [ElementPlusResolver()]
+        resolvers: [ElementPlusResolver()],
       }),
       Components({
-        resolvers: [ElementPlusResolver()]
+        resolvers: [ElementPlusResolver()],
       }),
       // visualizer({ open: true }),
       VueDevTools(),
@@ -50,34 +54,34 @@ export default defineConfig(({ mode }) => {
         disable: false,
         deleteOriginFile: false,
         threshold: 10240,
-        algorithm: 'gzip',
-        ext: '.gz'
+        algorithm: "gzip",
+        ext: ".gz",
       }),
       chunkSplitPlugin({
-        strategy: 'default'
+        strategy: "default",
       }),
       topLevelAwait({
-        promiseExportName: '__tla',
-        promiseImportName: (i) => `__tla_${i}`
-      })
+        promiseExportName: "__tla",
+        promiseImportName: (i) => `__tla_${i}`,
+      }),
     ],
     optimizeDeps: {
       // include: ['pdfjs-dist', ...optimizeDepsElementPlusIncludes],
       include: [...optimizeDepsElementPlusIncludes],
-      exclude: ['pdfjs-dist']
+      exclude: ["pdfjs-dist"],
     },
     //静态资源服务的文件夹
-    publicDir: 'public',
-    base: './',
-    assetsInclude: '',
-    logLevel: 'info',
+    publicDir: "public",
+    base: "/chat-resume/",
+    assetsInclude: "",
+    logLevel: "info",
     clearScreen: false,
     resolve: {
       alias: {
-        '@': resolve(__dirname, 'src')
+        "@": resolve(__dirname, "src"),
       },
       conditions: [],
-      extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json']
+      extensions: [".mjs", ".js", ".ts", ".jsx", ".tsx", ".json"],
     },
     // css
     css: {
@@ -101,28 +105,28 @@ export default defineConfig(({ mode }) => {
                       // landscapeUnit: "vw", // 横屏时使用的单位
                       // landscapeWidth: 1134 // 横屏时使用的视窗宽度
                     }), */
-        ]
+        ],
       },
       preprocessorOptions: {
         scss: {
           additionalData: `
         @use "@/assets/style/variables.scss" as *;
-        `
-        }
-      }
+        `,
+        },
+      },
     },
     json: {
       namedExports: true,
-      stringify: false
+      stringify: false,
     },
     esbuild: {
-      jsxFactory: 'h',
-      jsxFragment: 'Fragment',
-      jsxInject: `import Vue from 'vue'`
+      jsxFactory: "h",
+      jsxFragment: "Fragment",
+      jsxInject: `import Vue from 'vue'`,
     },
     //本地运行配置，以及反向代理配置
     server: {
-      host: 'localhost',
+      host: "localhost",
       https: false,
       cors: true,
       open: true,
@@ -131,48 +135,48 @@ export default defineConfig(({ mode }) => {
       force: true,
       hmr: true,
       watch: {
-        ignored: ['!**/node_modules/your-package-name/**']
+        ignored: ["!**/node_modules/your-package-name/**"],
       },
       proxy: {
-        '/api': {
+        "/api": {
           target: env.VITE_BASE_API,
           changeOrigin: true,
-          rewrite: path => path.replace(/^/, '') // 将请求中/api用空值替换重写，根据实际业务修改
+          rewrite: (path) => path.replace(/^/, ""), // 将请求中/api用空值替换重写，根据实际业务修改
         },
-      }
+      },
     },
     //打包配置
     build: {
-      target: 'modules',
-      outDir: 'dist',
-      assetsDir: 'assets',
+      target: "modules",
+      outDir: "dist",
+      assetsDir: "assets",
       assetsInlineLimit: 4096,
       cssCodeSplit: true,
       sourcemap: false,
       rollupOptions: {
         output: {
-          format: 'es',
+          format: "es",
           manualChunks(id, { getModuleInfo, getModuleIds }) {
-            if (id.includes('node_modules')) {
-              return 'vendor'
+            if (id.includes("node_modules")) {
+              return "vendor";
             }
-          }
-        }
+          },
+        },
       },
       commonjsOptions: {},
       manifest: false,
-      minify: 'terser', //terser 构建后文件体积更小
+      minify: "terser", //terser 构建后文件体积更小
       terserOptions: {},
       write: true,
       emptyOutDir: true,
-      chunkSizeWarningLimit: 500
+      chunkSizeWarningLimit: 500,
     },
     ssr: {
       external: [],
-      noExternal: []
-    }
-  }
-})
+      noExternal: [],
+    },
+  };
+});
 
 // export default () =>
 //   defineConfig({
