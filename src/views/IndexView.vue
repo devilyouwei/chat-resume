@@ -14,20 +14,20 @@
                 <div class='content'>
                   <p>Hi，我是黄有为的大模型数字分身，你可以询问任何关于我个人的问题！例如：</p>
                   <ul>
-                    <li>你目前的工作是什么？</li>
-                    <li>你是哪里人？</li>
-                    <li>你的研究领域有哪些？</li>
-                    <li>你发表过哪些成果？</li>
+                    <li v-for="(item, index) in questions" :key="index" @click="sendMessage(item)">
+                      {{ item }}
+                    </li>
                   </ul>
+                  <p class="tip">（点击上述问题直接发送）</p>
                 </div>
               </div>
             </div>
             <!--   会话内容   -->
             <div :class='`chat-item ${role[item.role]}`' v-for='(item, i) of messageList' :key='i'>
-              <template v-if='item.content || item.sub_json || item.get_relatd'>
+              <template v-if='item.content'>
                 <div :class='`avatar-${role[item.role]}`' />
                 <div class='content-wrap'>
-                  <div class='content' :class="{ 'card-content': item.sub_json || item.get_relatd }">
+                  <div class='content'>
                     <template v-if="item.role === 'user'">
                       <div v-html='md.render(item.content)' />
                     </template>
@@ -45,7 +45,7 @@
             <div class='chat-input' :class='{ disabled: sending }'>
               <el-input :disabled='sending' v-model='messageContent' type='textarea'
                 :autosize='{ minRows: 3, maxRows: 3 }' :placeholder='placeholder' @keydown="keydownHandle" />
-              <button class='send-btn' @click='sendChatMessage()' :class='{ disabled: sending }'>
+              <button class='send-btn' @click='sendMessage()' :class='{ disabled: sending }'>
                 <img :src="getAssetsImage('send.png')" alt='发送' />
               </button>
             </div>
@@ -72,17 +72,21 @@ const sending = ref(false)
 const messageContent = ref('');
 
 // placeholder 提示语
-const placeholder = ref('想跟黄有为聊点啥呢？');
-// 聊天角色
-const role = { user: 'user', assistant: 'assistant', system: 'system' };
-
-// 聊天框内容列表
 const messageList = ref<ChatMessage[]>([]);
+const placeholder = ref('想跟黄有为聊点啥呢？');
 const loadingMessage = '🤔让我想一想该怎么回答好呢...'
 const firstMessage = '你好，请简单介绍下自己吧~'
+const questions = [
+  '你目前的工作是什么？',
+  '你是哪里人？',
+  '你的研究领域有哪些？',
+  '你发表过哪些成果？'
+]
 
+// 聊天角色
+const role = { user: 'user', assistant: 'assistant', system: 'system' };
 // 发送提问问题
-const sendChatMessage = async (content: string = messageContent.value) => {
+const sendMessage = async (content: string = messageContent.value) => {
   console.log(content)
   if (!content.trim() || sending.value) return false
   try {
@@ -149,13 +153,7 @@ watch(() => messageList.value, () => {
 
 
 
-function keydownHandle(event: {
-  keyCode: number
-  ctrlKey: any
-  metaKey: any
-  stopPropagation: () => void
-  preventDefault: () => void
-}) {
+function keydownHandle(event) {
   // console.log(event);
 
   if (event.keyCode === 13 && !event.ctrlKey && !event.metaKey) {
@@ -163,38 +161,17 @@ function keydownHandle(event: {
     // 这里可以添加事件a的处理逻辑
     event.stopPropagation()
     event.preventDefault()
-    sendChatMessage()
+    sendMessage()
   } else if (event.keyCode === 13 && (event.ctrlKey || event.metaKey)) {
-    // 如果同时按下了Ctrl键和Enter键，则执行事件b的逻辑
-    // 这里可以添加事件b的处理逻辑
-    //滚动到底部
-
-    insertNewLine(event)
-  }
-}
-
-// 换行
-function insertNewLine(event: { ctrlKey: any; metaKey: any; keyCode: number }) {
-  // 检查是否按下了Ctrl键和Enter键
-  if ((event.ctrlKey || event.metaKey) && event.keyCode === 13) {
-    // 在输入框中插入换行字符
     messageContent.value += '\n'
-    // console.log(event.target.scrollHeight)
-
-    toBottom(event.target)
+    const inputElement = event.target
+    requestAnimationFrame(() => {
+      inputElement.scrollTop = inputElement.scrollHeight - inputElement.clientHeight
+    })
   }
 }
-function toBottom(inputElement) {
-  // 滚动到输入框的底部
-  requestAnimationFrame(() => {
-    // 滚动到输入框的底部
-    inputElement.scrollTop = inputElement.scrollHeight - inputElement.clientHeight
-  })
-}
 
-onMounted(() => {
-  sendChatMessage(firstMessage)
-});
+// onMounted(() => sendMessage(firstMessage));
 
 </script>
 
@@ -399,6 +376,15 @@ pre {
 
       p {
         margin-bottom: 10px;
+
+        &.tip {
+          color: #666;
+          font-weight: normal;
+          font-size: 12.5px;
+          margin: 0;
+          padding: 0;
+          float: right;
+        }
       }
 
       ul {
@@ -406,8 +392,16 @@ pre {
         padding-left: 30px;
 
         li {
+          cursor: pointer;
           line-height: 28px;
           list-style-type: disc;
+          transition: all 0.3s ease-in-out;
+
+          &:hover {
+            color: #2e67fa;
+            padding-left: 10px;
+            font-weight: bold;
+          }
         }
       }
     }
@@ -416,7 +410,7 @@ pre {
       align-items: normal;
 
       .content {
-        padding: 20px;
+        padding: 20px 20px 10px 20px;
 
         p {
           font-weight: 500;
@@ -499,43 +493,6 @@ pre {
     }
   }
 
-  .detail-card {
-    position: relative;
-    width: 300px;
-    height: 100px;
-    padding: 13px 23px;
-    font-size: 16px;
-    line-height: 32px;
-    color: #fff;
-    box-sizing: border-box;
-    cursor: pointer;
-
-    &.card-1 {
-      background: url("@/assets/images/card1.png") no-repeat center / 100% 100%;
-    }
-
-    &.card-2 {
-      background: url("@/assets/images/card2.png") no-repeat center / 100% 100%;
-    }
-
-    &.card-3 {
-      background: url("@/assets/images/card4.png") no-repeat center / 100% 100%;
-    }
-
-    &.card-4 {
-      background: url("@/assets/images/card3.png") no-repeat center / 100% 100%;
-    }
-
-    &:after {
-      position: absolute;
-      right: 28px;
-      bottom: 22px;
-      width: 20px;
-      height: 20px;
-      content: '';
-      background: url("@/assets/images/go.png") no-repeat center / 100% 100%;
-    }
-  }
 }
 
 .bottom {

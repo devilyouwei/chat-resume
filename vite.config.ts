@@ -5,16 +5,11 @@ import { resolve } from "path";
 import AutoImport from "unplugin-auto-import/vite";
 import Components from "unplugin-vue-components/vite";
 import { ElementPlusResolver } from "unplugin-vue-components/resolvers";
-import { visualizer } from "rollup-plugin-visualizer";
 import viteCompression from "vite-plugin-compression";
 import progress from "vite-plugin-progress";
 import { chunkSplitPlugin } from "vite-plugin-chunk-split";
-
 import vueJsx from "@vitejs/plugin-vue-jsx";
 import VueDevTools from "vite-plugin-vue-devtools";
-
-import postcsspxtoviewport from "postcss-px-to-viewport";
-
 import topLevelAwait from "vite-plugin-top-level-await";
 
 const optimizeDepsElementPlusIncludes = ["element-plus/es"];

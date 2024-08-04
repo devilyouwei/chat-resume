@@ -2,7 +2,7 @@
 
 # 大模型简历数字人
 
-🚀 **体验地址：**<https://www.devil.ren>
+🚀 **体验地址：**<https://chat.devil.ren>
 
 快来和我数字人分身聊一聊吧～
 
