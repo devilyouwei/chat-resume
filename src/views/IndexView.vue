@@ -80,10 +80,10 @@ const questions = [
   '你目前的工作是什么？',
   '你的研究领域有哪些？',
   '介绍下你的教育背景？',
-  '你是哪里人？',
+  'Where are you from？',
   '你发表过哪些成果或著作？'
 ]
-const errorMessage = '<font color=red>**网络错误**：根据相关法律法规，我无法接收来自中国大陆的请求，请切换至海外网络，谢谢！</font>'
+const errorMessage = `<font color=red>**网络错误**：根据相关法律法规，我无法接收来自中国大陆的请求，请切换至海外网络，谢谢！\nUnable to receive requests from China due to regulations. Please use an overseas network. </font>`
 
 // 聊天角色
 const role = { user: 'user', assistant: 'assistant', system: 'system' };
