@@ -78,10 +78,12 @@ const loadingMessage = '🤔让我想一想该怎么回答好呢...'
 const firstMessage = '你好，请简单介绍下自己吧~'
 const questions = [
   '你目前的工作是什么？',
-  '你是哪里人？',
   '你的研究领域有哪些？',
-  '你发表过哪些成果？'
+  '介绍下你的教育背景？',
+  '你是哪里人？',
+  '你发表过哪些成果或著作？'
 ]
+const errorMessage = '<font color=red>**网络错误**：根据相关法律法规，我无法接收来自中国大陆的请求，请切换至海外网络，谢谢！</font>'
 
 // 聊天角色
 const role = { user: 'user', assistant: 'assistant', system: 'system' };
@@ -106,8 +108,8 @@ const sendMessage = async (content: string = messageContent.value) => {
 
       await readStream(reader, status)
     }
-  } catch (error: any) {
-    appendLastMessageContent(error)
+  } catch (e: any) {
+    appendLastMessageContent(errorMessage)
   } finally {
     sending.value = false
   }
@@ -179,7 +181,7 @@ function keydownHandle(event) {
 .chat-page {
   width: 100%;
   height: 100vh;
-  background: $color-bg-chat linear-gradient(180deg, #F4F5F7 0%, #FFFFFF 66%, #DEE9FF 100%);
+  background: $color-bg-chat linear-gradient(180deg, #F4F5F7 0%, #DEE9FF 100%);
 }
 
 .chat-history {
