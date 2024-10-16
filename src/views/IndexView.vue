@@ -1,52 +1,78 @@
 <template>
-  <div class='chat-page'>
+  <div class="chat-page">
     <!--  当前会话  -->
-    <div class='chat-current' ref='chatPageRef'>
-
-      <div class='container chat-content' ref='chatListDom'>
+    <div class="chat-current" ref="chatPageRef">
+      <div class="container chat-content" ref="chatListDom">
         <!-- 聊天框 -->
-        <div class='chat-wrap'>
-          <div class='list'>
+        <div class="chat-wrap">
+          <div class="list">
             <!--  引导语    -->
-            <div class='chat-item'>
-              <div class='avatar-system' />
-              <div class='content-wrap content-wrap-system'>
-                <div class='content'>
-                  <p>Hi，我是黄有为的大模型数字分身，你可以询问任何关于我个人的问题！例如：</p>
+            <div class="chat-item">
+              <div class="avatar-system" />
+              <div class="content-wrap content-wrap-system">
+                <div class="content">
+                  <p>
+                    Hi, I'm the LLM avatar of Youwei Huang. You can ask me any
+                    questions about me! For example:
+                  </p>
                   <ul>
-                    <li v-for="(item, index) in questions" :key="index" @click="sendMessage(item)">
+                    <li
+                      v-for="(item, index) in questions"
+                      :key="index"
+                      @click="sendMessage(item)"
+                    >
                       {{ item }}
                     </li>
                   </ul>
-                  <p class="tip">（点击上述问题直接发送）</p>
+                  <p class="tip">
+                    (Click on the questions above to send directly)
+                  </p>
                 </div>
               </div>
             </div>
             <!--   会话内容   -->
-            <div :class='`chat-item ${role[item.role]}`' v-for='(item, i) of messageList' :key='i'>
-              <template v-if='item.content'>
-                <div :class='`avatar-${role[item.role]}`' />
-                <div class='content-wrap'>
-                  <div class='content'>
+            <div
+              :class="`chat-item ${role[item.role]}`"
+              v-for="(item, i) of messageList"
+              :key="i"
+            >
+              <template v-if="item.content">
+                <div :class="`avatar-${role[item.role]}`" />
+                <div class="content-wrap">
+                  <div class="content">
                     <template v-if="item.role === 'user'">
-                      <div v-html='md.render(item.content)' />
+                      <div v-html="md.render(item.content)" />
                     </template>
                     <div v-if="item.role !== 'user'">
-                      <MdPreview v-if='item.content' :html-render='true' :no-img-zoom-in='true' v-model='item.content'
-                        style='padding: 0; background: none' />
+                      <MdPreview
+                        v-if="item.content"
+                        :html-render="true"
+                        :no-img-zoom-in="true"
+                        v-model="item.content"
+                        style="padding: 0; background: none"
+                      />
                     </div>
                   </div>
                 </div>
               </template>
             </div>
-
           </div>
-          <div class='bottom tab'>
-            <div class='chat-input' :class='{ disabled: sending }'>
-              <el-input :disabled='sending' v-model='messageContent' type='textarea'
-                :autosize='{ minRows: 3, maxRows: 3 }' :placeholder='placeholder' @keydown="keydownHandle" />
-              <button class='send-btn' @click='sendMessage()' :class='{ disabled: sending }'>
-                <img :src="getAssetsImage('send.png')" alt='发送' />
+          <div class="bottom tab">
+            <div class="chat-input" :class="{ disabled: sending }">
+              <el-input
+                :disabled="sending"
+                v-model="messageContent"
+                type="textarea"
+                :autosize="{ minRows: 3, maxRows: 3 }"
+                :placeholder="placeholder"
+                @keydown="keydownHandle"
+              />
+              <button
+                class="send-btn"
+                @click="sendMessage()"
+                :class="{ disabled: sending }"
+              >
+                <img :src="getAssetsImage('send.png')" alt="发送" />
               </button>
             </div>
           </div>
@@ -54,106 +80,106 @@
       </div>
     </div>
   </div>
-
 </template>
 
-<script setup lang='ts'>
-import { nextTick, onMounted, ref, watch } from 'vue';
-import { getAssetsImage, md } from '@/utils';
-import type { ChatMessage } from '@/apis';
-import { MdPreview } from 'md-editor-v3';
-import { sse } from '@/utils/service'
-import { EventSourceParserStream } from 'eventsource-parser/stream'
+<script setup lang="ts">
+import { nextTick, ref, watch } from "vue";
+import { getAssetsImage, md } from "@/utils";
+import type { ChatMessage } from "@/apis";
+import { MdPreview } from "md-editor-v3";
+import { sse } from "@/utils/service";
+import { EventSourceParserStream } from "eventsource-parser/stream";
 
-
-const sending = ref(false)
+const sending = ref(false);
 
 // 输入框的内容
-const messageContent = ref('');
+const messageContent = ref("");
 
 // placeholder 提示语
 const messageList = ref<ChatMessage[]>([]);
-const placeholder = ref('想跟黄有为聊点啥呢？');
-const loadingMessage = '🤔让我想一想该怎么回答好呢...'
-const firstMessage = '你好，请简单介绍下自己吧~'
+
+const placeholder = ref("What would you like to chat about with Youwei Huang?");
+const loadingMessage = "🤔 Let me think about how to answer that...";
 const questions = [
-  '你目前的工作是什么？',
-  '你的研究领域有哪些？',
-  '介绍下你的教育背景？',
-  'Where are you from？',
-  '你发表过哪些成果或著作？'
-]
-const errorMessage = `<font color=red>**网络错误**：根据相关法律法规，我无法接收来自中国大陆的请求，请切换至海外网络，谢谢！\nUnable to receive requests from China due to regulations. Please use an overseas network. </font>`
+  "What is your current work?",
+  "What are your research areas?",
+  "Can you introduce your educational background?",
+  "Where are you from?",
+  "What achievements or publications have you made?",
+];
+const errorMessage = `<font color=red>**网络错误**：根据相关法律法规，我无法接收来自中国大陆的请求，请切换至海外网络，谢谢！\nUnable to receive requests from China due to regulations. Please use an overseas network. </font>`;
 
 // 聊天角色
-const role = { user: 'user', assistant: 'assistant', system: 'system' };
+const role = { user: "user", assistant: "assistant", system: "system" };
 // 发送提问问题
 const sendMessage = async (content: string = messageContent.value) => {
-  console.log(content)
-  if (!content.trim() || sending.value) return false
+  console.log(content);
+  if (!content.trim() || sending.value) return false;
   try {
-    nextTick(() => scrollToBottom())
-    sending.value = true
-    messageList.value.push({ role: 'user', content })
-    messageContent.value = ''
-    const param = { input: [...messageList.value], stream: true }
-    messageList.value.push({ role: 'assistant', content: loadingMessage })
-    nextTick(() => scrollToBottom())
-    const { body, status } = await sse('/chat', param)
+    nextTick(() => scrollToBottom());
+    sending.value = true;
+    messageList.value.push({ role: "user", content });
+    messageContent.value = "";
+    const param = { input: [...messageList.value], stream: true };
+    messageList.value.push({ role: "assistant", content: loadingMessage });
+    nextTick(() => scrollToBottom());
+    const { body, status } = await sse("/chat", param);
     if (body) {
       const reader = body
         .pipeThrough(new TextDecoderStream())
         .pipeThrough(new EventSourceParserStream())
-        .getReader()
+        .getReader();
 
-      await readStream(reader, status)
+      await readStream(reader, status);
     }
   } catch (e: any) {
-    appendLastMessageContent(errorMessage)
+    appendLastMessageContent(errorMessage);
   } finally {
-    sending.value = false
+    sending.value = false;
   }
-}
+};
 
 // 读取流数据
 const readStream = async (reader, status: number) => {
   /* eslint-disable no-constant-condition*/
   while (true) {
-    const { value, done } = await reader.read()
-    if (done) break
+    const { value, done } = await reader.read();
+    if (done) break;
 
-    const { data, status, msg } = JSON.parse(value.data)
+    const { data, status, msg } = JSON.parse(value.data);
     if (status === 1) {
-      if (!data) break
-      appendLastMessageContent(data.content)
-      nextTick(() => scrollToBottom())
+      if (!data) break;
+      appendLastMessageContent(data.content);
+      nextTick(() => scrollToBottom());
     } else {
-      messageList.value.pop()
-      throw new Error(msg)
+      messageList.value.pop();
+      throw new Error(msg);
     }
   }
-}
+};
 
 // 将最新的流数据加入到message队列中，等待渲染
 const appendLastMessageContent = (content: string) => {
-  const end = messageList.value.length - 1 >= 0 ? messageList.value.length - 1 : 0
-  if (messageList.value[end].content === loadingMessage) messageList.value[end].content = ''
-  messageList.value[end].content += content
-}
-
+  const end =
+    messageList.value.length - 1 >= 0 ? messageList.value.length - 1 : 0;
+  if (messageList.value[end].content === loadingMessage)
+    messageList.value[end].content = "";
+  messageList.value[end].content += content;
+};
 
 // 新的message进来，页面保持滚动到最底部
-const chatPageRef = ref();  // 滚动条所在DOM
+const chatPageRef = ref(); // 滚动条所在DOM
 const chatListDom = ref<HTMLDivElement>(); // 内容DOM
 const scrollToBottom = () => {
   if (!chatListDom.value) return;
   chatPageRef.value.scrollTo(0, chatListDom.value.scrollHeight);
 };
-watch(() => messageList.value, () => {
-  nextTick(() => scrollToBottom());
-});
-
-
+watch(
+  () => messageList.value,
+  () => {
+    nextTick(() => scrollToBottom());
+  }
+);
 
 function keydownHandle(event) {
   // console.log(event);
@@ -161,27 +187,27 @@ function keydownHandle(event) {
   if (event.keyCode === 13 && !event.ctrlKey && !event.metaKey) {
     // 如果只按下了Enter键，则执行事件a的逻辑
     // 这里可以添加事件a的处理逻辑
-    event.stopPropagation()
-    event.preventDefault()
-    sendMessage()
+    event.stopPropagation();
+    event.preventDefault();
+    sendMessage();
   } else if (event.keyCode === 13 && (event.ctrlKey || event.metaKey)) {
-    messageContent.value += '\n'
-    const inputElement = event.target
+    messageContent.value += "\n";
+    const inputElement = event.target;
     requestAnimationFrame(() => {
-      inputElement.scrollTop = inputElement.scrollHeight - inputElement.clientHeight
-    })
+      inputElement.scrollTop =
+        inputElement.scrollHeight - inputElement.clientHeight;
+    });
   }
 }
 
 // onMounted(() => sendMessage(firstMessage));
-
 </script>
 
-<style lang='scss' scoped>
+<style lang="scss" scoped>
 .chat-page {
   width: 100%;
   height: 100vh;
-  background: $color-bg-chat linear-gradient(180deg, #F4F5F7 0%, #DEE9FF 100%);
+  background: $color-bg-chat linear-gradient(180deg, #f4f5f7 0%, #dee9ff 100%);
 }
 
 .chat-history {
@@ -321,7 +347,8 @@ function keydownHandle(event) {
   right: 0;
   width: 100%;
   height: 100vh;
-  background: $color-bg-chat linear-gradient(180deg, #F4F5F7 0%, #FFFFFF 66%, #DEE9FF 100%);
+  background: $color-bg-chat
+    linear-gradient(180deg, #f4f5f7 0%, #ffffff 66%, #dee9ff 100%);
 
   &.transparent {
     background: transparent;
@@ -330,10 +357,11 @@ function keydownHandle(event) {
 
 /* 聊天框 start */
 pre {
-  font-family: -apple-system, 'Noto Sans', 'Helvetica Neue', Helvetica, 'Nimbus Sans L', Arial,
-    'Liberation Sans', 'PingFang SC', 'Hiragino Sans GB', 'Noto Sans CJK SC', 'Source Han Sans SC',
-    'Source Han Sans CN', 'Microsoft YaHei', 'Wenquanyi Micro Hei', 'WenQuanYi Zen Hei', 'ST Heiti',
-    SimHei, 'WenQuanYi Zen Hei Sharp', sans-serif;
+  font-family: -apple-system, "Noto Sans", "Helvetica Neue", Helvetica,
+    "Nimbus Sans L", Arial, "Liberation Sans", "PingFang SC", "Hiragino Sans GB",
+    "Noto Sans CJK SC", "Source Han Sans SC", "Source Han Sans CN",
+    "Microsoft YaHei", "Wenquanyi Micro Hei", "WenQuanYi Zen Hei", "ST Heiti",
+    SimHei, "WenQuanYi Zen Hei Sharp", sans-serif;
 }
 
 .chat-wrap {
@@ -390,7 +418,6 @@ pre {
       }
 
       ul {
-
         padding-left: 30px;
 
         li {
@@ -469,7 +496,6 @@ pre {
         &:hover .sprite-copy {
           visibility: visible;
         }
-
       }
     }
   }
@@ -479,7 +505,7 @@ pre {
       width: 35px;
       height: 35px;
       //margin: 0 7px 7px;
-      content: 'ME';
+      content: "ME";
       color: #fff;
       border-radius: 50%;
       background: url("@/assets/images/user.png") no-repeat center/ 100% 100%;
@@ -491,10 +517,9 @@ pre {
       width: 40px;
       height: 40px;
       border-radius: 100%;
-      background: url('@/assets/images/avatar.png') no-repeat center/ 100% 100%;
+      background: url("@/assets/images/avatar.png") no-repeat center/ 100% 100%;
     }
   }
-
 }
 
 .bottom {
@@ -515,7 +540,7 @@ pre {
       position: absolute;
       top: 0;
       left: 0;
-      content: '';
+      content: "";
       width: 100%;
       height: 100%;
       cursor: pointer;
@@ -525,7 +550,7 @@ pre {
       animation: shake 1s ease-in-out infinite;
 
       .el-textarea {
-        border: 1px solid #3360FD;
+        border: 1px solid #3360fd;
         animation: border-flash 1s infinite;
       }
     }
@@ -546,7 +571,11 @@ pre {
       height: 26px;
       border: 0;
       outline: 0;
-      background: linear-gradient(270deg, #46A3FF 0%, rgba(7, 55, 195, 0.82) 100%);
+      background: linear-gradient(
+        270deg,
+        #46a3ff 0%,
+        rgba(7, 55, 195, 0.82) 100%
+      );
       border-radius: 10px;
 
       &.disabled {
@@ -572,7 +601,7 @@ pre {
     animation: shake 1s ease-in-out infinite;
 
     li {
-      border: 1px solid #3360FD;
+      border: 1px solid #3360fd;
       animation: border-flash 1s infinite;
     }
   }
@@ -594,16 +623,14 @@ pre {
     cursor: pointer;
 
     &.active {
-      border: 1px solid #3360FD;
-      background: #EBECFB;
+      border: 1px solid #3360fd;
+      background: #ebecfb;
     }
-
 
     img {
       width: 32px;
       height: 32px;
     }
-
   }
 }
 
@@ -628,7 +655,7 @@ pre {
     width: 5em;
     text-align: center;
     line-height: 32px;
-    color: #3360FD;
+    color: #3360fd;
 
     &.btn {
       background: #fff;
@@ -669,7 +696,7 @@ pre {
   }
 
   50% {
-    border-color: #3360FD;
+    border-color: #3360fd;
   }
 
   100% {
@@ -679,7 +706,7 @@ pre {
 
 /* 聊天框 end */
 </style>
-<style lang='scss'>
+<style lang="scss">
 .chat-wrap .chat-input textarea {
   box-shadow: none !important;
   resize: none;
