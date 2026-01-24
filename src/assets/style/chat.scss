@@ -1,0 +1,576 @@
+@use "sass:math";
+
+/* Define CSS Variables for Theming */
+:root {
+  --primary-color: #0072ff;
+  --secondary-color: #00c6ff;
+  --bg-color: #f5f7fa;
+  --text-main: #333333;
+  --text-secondary: #666666;
+  --glass-bg: rgba(0, 0, 0, 0.03);
+  --glass-border: rgba(0, 0, 0, 0.05);
+  --input-bg: rgba(255, 255, 255, 0.8);
+  --input-focus-bg: rgba(255, 255, 255, 0.95);
+  --bubble-system-bg: rgba(255, 255, 255, 0.8);
+  --bubble-user-text: #fff;
+  --shadow-color: rgba(0, 0, 0, 0.05);
+  --shadow-glow: rgba(0, 114, 255, 0.15);
+  --bottom-gradient-start: rgba(245, 247, 250, 0);
+  --bottom-gradient-end: rgba(245, 247, 250, 1);
+
+  /* Markdown Specific Light */
+  --md-code-bg: rgba(0, 0, 0, 0.05);
+  --md-pre-bg: #f0f0f0;
+  --md-quote-bg: rgba(0, 0, 0, 0.03);
+}
+
+:root[class="dark"] {
+  --primary-color: #00dbde; /* Slightly darker cyan */
+  --secondary-color: #3a6073; /* Muted blue-grey to reduce glare */
+  --bg-color: #121212;
+  --text-main: #e0e0e0;
+  --text-secondary: #a0a0a0;
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --input-bg: rgba(40, 40, 40, 0.7);
+  --input-focus-bg: rgba(50, 50, 50, 0.9);
+  --bubble-system-bg: rgba(30, 30, 30, 0.8);
+  --bubble-user-text: #fff;
+  --shadow-color: rgba(0, 0, 0, 0.3);
+  --shadow-glow: rgba(0, 242, 254, 0.3);
+  --bottom-gradient-start: rgba(18, 18, 18, 0);
+  --bottom-gradient-end: rgba(18, 18, 18, 1);
+
+  /* Markdown Specific Dark */
+  --md-code-bg: rgba(255, 255, 255, 0.1);
+  --md-pre-bg: #1e1e1e;
+  --md-quote-bg: rgba(255, 255, 255, 0.05);
+}
+
+/* Map SCSS Variables to CSS Custom Properties */
+$primary-color: var(--primary-color);
+$secondary-color: var(--secondary-color);
+$bg-dark: var(--bg-color);
+$glass-bg: var(--glass-bg);
+$glass-border: var(--glass-border);
+$text-main: var(--text-main);
+$text-secondary: var(--text-secondary);
+
+/* Global Chat Page Layout */
+.chat-page {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  background-color: $bg-dark;
+  overflow: hidden;
+  color: $text-main;
+  font-family:
+    "Inter",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    Helvetica,
+    Arial,
+    sans-serif;
+  font-size: 1rem; /* Base size, scales with root */
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+}
+
+/* Ambient Background Effects */
+.bg-gradient-1 {
+  position: absolute;
+  top: -10%;
+  left: -10%;
+  width: 50%;
+  height: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(79, 172, 254, 0.15) 0%,
+    rgba(0, 0, 0, 0) 70%
+  );
+  filter: blur(3.75rem); /* 60px */
+  z-index: 0;
+  animation: float 20s infinite alternate;
+}
+
+.bg-gradient-2 {
+  position: absolute;
+  bottom: -10%;
+  right: -10%;
+  width: 60%;
+  height: 60%;
+  background: radial-gradient(
+    circle,
+    rgba(0, 242, 254, 0.1) 0%,
+    rgba(0, 0, 0, 0) 70%
+  );
+  filter: blur(3.75rem); /* 60px */
+  z-index: 0;
+  animation: float-reverse 25s infinite alternate;
+}
+
+@keyframes float {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(3.125rem, 3.125rem);
+  } /* 50px */
+}
+
+@keyframes float-reverse {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(-3.125rem, -3.125rem);
+  } /* -50px */
+}
+
+.chat-current {
+  position: relative;
+  height: 100vh;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+  z-index: 10;
+  /* IMPORTANT: Add padding to bottom to prevent overlap with fixed input */
+  padding-bottom: 9rem;
+  box-sizing: border-box;
+
+  /* Custom Scrollbar */
+  &::-webkit-scrollbar {
+    width: 0.375rem; /* 6px */
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 0.1875rem; /* 3px */
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+}
+
+.chat-content {
+  width: 100%;
+  max-width: 56.25rem; /* 900px */
+  margin: 0 auto;
+  padding: 1.25rem; /* 20px */
+  box-sizing: border-box;
+}
+
+.chat-wrap {
+  width: 100%;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem; /* 24px */
+}
+
+/* Animations */
+.animate-in {
+  animation: messagePop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  opacity: 0;
+  transform: scale(0.9) translateY(1rem);
+  will-change: transform, opacity;
+}
+
+.chat-item.user.animate-in {
+  transform-origin: bottom right;
+}
+
+.chat-item.assistant.animate-in,
+.chat-item.system.animate-in {
+  transform-origin: bottom left;
+}
+
+@keyframes messagePop {
+  0% {
+    opacity: 0;
+    transform: scale(0.9) translateY(1rem);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Chat Items */
+.chat-item {
+  display: flex;
+  gap: 1rem; /* 16px */
+
+  &.user {
+    flex-direction: row-reverse;
+  }
+}
+
+.avatar-system {
+  width: 2.625rem; /* 42px */
+  height: 2.625rem;
+  border-radius: 0.75rem; /* 12px */
+  background: linear-gradient(135deg, $secondary-color, $primary-color);
+  flex-shrink: 0;
+  box-shadow: 0 0.25rem 0.75rem var(--shadow-glow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &::after {
+    content: "AI";
+    font-weight: bold;
+    color: #fff;
+    font-size: 0.875rem; /* 14px */
+  }
+}
+
+.avatar-assistant {
+  width: 2.625rem; /* 42px */
+  height: 2.625rem;
+  border-radius: 50%;
+  background: var(--bg-color); /* Adaptive bg */
+  border: 2px solid $glass-border;
+  background-image: url("@/assets/images/avatar.png");
+  background-size: cover;
+  flex-shrink: 0;
+  box-shadow: 0 0.25rem 0.75rem var(--shadow-glow);
+}
+
+.avatar-user {
+  width: 2.625rem; /* 42px */
+  height: 2.625rem;
+  border-radius: 50%;
+  background: var(--bg-color); /* Adaptive bg */
+  border: 2px solid $glass-border;
+  background-image: url("@/assets/images/user.png");
+  background-size: cover;
+  flex-shrink: 0;
+}
+
+.content-wrap {
+  display: flex;
+  flex-direction: column;
+  max-width: calc(100% - 4rem); /* Ensure it fits with avatar + gap */
+}
+
+/* Message Bubble Styles */
+.content {
+  padding: 0.6rem 0.8rem; /* Compact padding */
+  border-radius: 0.8rem; /* Optimized radius */
+  position: relative;
+  line-height: 1.5;
+  word-break: break-word;
+  transition: all 0.3s ease;
+
+  /* System/Assistant Bubble */
+  .system &,
+  .assistant & {
+    background: var(--bubble-system-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid $glass-border;
+    border-top-left-radius: 0.125rem; /* 2px */
+    color: $text-main;
+    box-shadow: 0 0.25rem 0.375rem var(--shadow-color);
+  }
+
+  /* User Bubble */
+  .user & {
+    background: linear-gradient(135deg, $secondary-color, $primary-color);
+    color: var(--bubble-user-text);
+    border-top-right-radius: 0.125rem; /* 2px */
+    box-shadow: 0 0.25rem 0.9375rem var(--shadow-glow);
+  }
+}
+
+/* System Intro Specifics */
+.system-intro {
+  margin-bottom: 1.25rem;
+
+  .content {
+    width: 100%;
+    background: var(--bubble-system-bg) !important;
+  }
+
+  .greeting {
+    font-size: 1.125rem; /* 18px */
+    margin-bottom: 0.5rem;
+    color: $text-main;
+  }
+
+  .sub-greeting {
+    margin-bottom: 1.25rem;
+    color: $text-secondary;
+    font-size: 0.875rem;
+  }
+}
+
+.suggestion-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr)); /* 176px */
+  gap: 0.75rem; /* 12px */
+  margin-bottom: 1rem;
+}
+
+.suggestion-item {
+  padding: 0.625rem 1rem;
+  background: $glass-bg;
+  border: 1px solid $glass-border;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  font-size: 0.8125rem; /* 13px */
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: $text-main;
+
+  &:hover {
+    background: var(--glass-border);
+    transform: translateY(-2px);
+    border-color: $primary-color;
+    box-shadow: 0 0.25rem 0.75rem var(--shadow-color);
+  }
+
+  .icon {
+    font-size: 1rem;
+  }
+}
+
+.tip {
+  font-size: 0.75rem; /* 12px */
+  color: $text-secondary;
+  opacity: 0.7;
+  text-align: right;
+  margin-top: 0.625rem;
+}
+
+/* Bottom Area & Input */
+.bottom-area {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 1.25rem 0 1.25rem 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none; /* Let clicks pass through the transparent top part */
+}
+
+/* Enable pointer events for children */
+.bottom-area > * {
+  pointer-events: auto;
+}
+
+.chat-input-container {
+  position: relative;
+  width: 90%;
+  max-width: 56.25rem;
+  background: var(--input-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid $glass-border;
+  border-radius: 1rem; /* 16px */
+  padding: 0.375rem; /* Smaller padding */
+  display: flex;
+  align-items: flex-end;
+  box-shadow: 0 0.625rem 1.875rem var(--shadow-color);
+  transition: all 0.3s ease;
+
+  &:focus-within {
+    border-color: $primary-color;
+    box-shadow: 0 0.625rem 1.875rem var(--shadow-glow);
+    background: var(--input-focus-bg);
+  }
+}
+
+/* Override Element Plus Input Styles */
+.chat-input-container .el-textarea__inner {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+  color: $text-main !important;
+  font-size: 0.9375rem !important; /* 15px */
+  padding: 0.5rem 0.75rem !important;
+  min-height: 2.5rem !important; /* 40px */
+  line-height: 1.4 !important;
+
+  &::placeholder {
+    color: $text-secondary;
+  }
+}
+
+.send-btn {
+  width: 2.25rem; /* 36px - Smaller button */
+  height: 2.25rem;
+  border-radius: 0.75rem;
+  border: none;
+  background: linear-gradient(135deg, $secondary-color, $primary-color);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin: 0.25rem;
+  margin-left: 0.5rem;
+  transition: all 0.2s;
+  flex-shrink: 0;
+
+  &:hover:not(.disabled) {
+    transform: scale(1.05);
+    box-shadow: 0 0 0.9375rem var(--shadow-glow);
+  }
+
+  &:active:not(.disabled) {
+    transform: scale(0.95);
+  }
+
+  &.disabled {
+    background: #444;
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+}
+
+.icon-send .el-icon {
+  font-size: 1.125rem;
+}
+
+/* Loading Dots Animation */
+.loading-dots {
+  display: flex;
+  gap: 0.1875rem;
+
+  span {
+    width: 0.25rem;
+    height: 0.25rem;
+    background: white;
+    border-radius: 50%;
+    animation: bounce 1.4s infinite ease-in-out both;
+
+    &:nth-child(1) {
+      animation-delay: -0.32s;
+    }
+    &:nth-child(2) {
+      animation-delay: -0.16s;
+    }
+  }
+}
+
+@keyframes bounce {
+  0%,
+  80%,
+  100% {
+    transform: scale(0);
+  }
+  40% {
+    transform: scale(1);
+  }
+}
+
+.copyright {
+  text-align: center;
+  font-size: 0.75rem;
+  color: #444;
+  margin-top: 0.5rem;
+}
+
+/* Markdown Customization for Adaptive Mode */
+.md-preview-custom {
+  color: $text-main;
+  .md-editor-preview-wrapper {
+    background: transparent;
+    padding: 0;
+  }
+
+  a {
+    color: $secondary-color;
+    text-decoration: none;
+    border-bottom: 1px dotted $secondary-color;
+
+    &:hover {
+      color: $primary-color;
+      border-bottom-style: solid;
+    }
+  }
+
+  code {
+    background: var(--md-code-bg);
+    color: #ff7b72;
+    padding: 0.125rem 0.375rem;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+  }
+
+  pre {
+    background: var(--md-pre-bg);
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+
+    code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+    }
+  }
+
+  p {
+    line-height: 1.6;
+    margin-bottom: 0.75rem;
+  }
+
+  ul,
+  ol {
+    padding-left: 1.25rem;
+    margin-bottom: 0.75rem;
+
+    li {
+      margin-bottom: 0.25rem;
+    }
+  }
+
+  blockquote {
+    border-left: 0.25rem solid $secondary-color;
+    background: var(--md-quote-bg);
+    margin: 0.625rem 0;
+    padding: 0.5rem 1rem;
+  }
+}
+
+/* Theme Toggle Button */
+.theme-toggle {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  z-index: 1000;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  color: var(--text-main);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+
+  &:hover {
+    background: var(--glass-border);
+    transform: rotate(15deg) scale(1.1);
+    box-shadow: 0 0 10px var(--shadow-glow);
+  }
+
+  svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+}

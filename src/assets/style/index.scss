@@ -3,6 +3,8 @@
 /* -------------reset start------------- */
 /* 禁用iPhone中Safari的字号自动调整 */
 html {
+  /* Using clamp for fluid typography */
+  font-size: clamp(16px, 1vw + 12px, 24px);
   -webkit-text-size-adjust: 100%;
   -ms-text-size-adjust: 100%;
   /* 解决IOS默认滑动很卡的情况 */
