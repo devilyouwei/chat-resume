@@ -140,7 +140,7 @@
           </div>
         </button>
       </div>
-      <div class="copyright">Power by LLM & Vue3</div>
+      <div class="copyright">Powered by LLM & Vue 3</div>
     </div>
   </div>
 </template>
@@ -211,11 +211,11 @@ const messageList = ref<ChatMessage[]>([]);
 const placeholder = ref("Type your question here...");
 const loadingMessage = "Thinking...";
 const questions = [
-  "What is your current work?",
-  "What are your research areas?",
-  "Educational background?",
-  "Where are you from?",
-  "Achievements & Publications?",
+  "What are you currently working on?",
+  "What are your research interests?",
+  "Tell me about your education.",
+  "Where are you based?",
+  "What are your notable achievements?",
 ];
 const errorMessage = `<font color=red>**Network Error**: Unable to connect. Please check your network settings.</font>`;
 
