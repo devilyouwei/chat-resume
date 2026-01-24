@@ -61,6 +61,7 @@ $text-secondary: var(--text-secondary);
   position: relative;
   width: 100%;
   height: 100vh;
+  height: 100dvh;
   background-color: $bg-dark;
   overflow: hidden;
   color: $text-main;
@@ -133,11 +134,16 @@ $text-secondary: var(--text-secondary);
 .chat-current {
   position: relative;
   height: 100vh;
+  height: 100dvh;
   overflow-y: auto;
   scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch; /* Enable momentum scrolling on iOS */
+  overscroll-behavior-y: contain; /* Prevent scroll chaining to body (stops "jelly" effect) */
   z-index: 10;
   /* IMPORTANT: Add padding to bottom to prevent overlap with fixed input */
   padding-bottom: 9rem;
+  padding-bottom: calc(9rem + constant(safe-area-inset-bottom));
+  padding-bottom: calc(9rem + env(safe-area-inset-bottom));
   box-sizing: border-box;
 
   /* Custom Scrollbar */
@@ -236,7 +242,6 @@ $text-secondary: var(--text-secondary);
   height: 2.625rem;
   border-radius: 50%;
   background: var(--bg-color); /* Adaptive bg */
-  border: 2px solid $glass-border;
   background-image: url("@/assets/images/avatar.png");
   background-size: cover;
   flex-shrink: 0;
@@ -248,7 +253,6 @@ $text-secondary: var(--text-secondary);
   height: 2.625rem;
   border-radius: 50%;
   background: var(--bg-color); /* Adaptive bg */
-  border: 2px solid $glass-border;
   background-image: url("@/assets/images/user.png");
   background-size: cover;
   flex-shrink: 0;
@@ -257,7 +261,6 @@ $text-secondary: var(--text-secondary);
 .content-wrap {
   display: flex;
   flex-direction: column;
-  max-width: calc(100% - 4rem); /* Ensure it fits with avatar + gap */
 }
 
 /* Message Bubble Styles */
@@ -293,9 +296,8 @@ $text-secondary: var(--text-secondary);
 .system-intro {
   margin-bottom: 1.25rem;
 
-  .content {
+  .content-wrap {
     width: 100%;
-    background: var(--bubble-system-bg) !important;
   }
 
   .greeting {
@@ -313,7 +315,7 @@ $text-secondary: var(--text-secondary);
 
 .suggestion-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr)); /* 176px */
+  grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
   gap: 0.75rem; /* 12px */
   margin-bottom: 1rem;
 }
@@ -358,6 +360,8 @@ $text-secondary: var(--text-secondary);
   left: 0;
   width: 100%;
   padding: 1.25rem 0 1.25rem 0;
+  padding-bottom: calc(1.25rem + constant(safe-area-inset-bottom));
+  padding-bottom: calc(1.25rem + env(safe-area-inset-bottom));
   z-index: 100;
   display: flex;
   flex-direction: column;
@@ -572,5 +576,24 @@ $text-secondary: var(--text-secondary);
   svg {
     width: 1.25rem;
     height: 1.25rem;
+  }
+}
+
+/* Mobile Responsive Layout */
+@media (max-width: 48rem) {
+  .chat-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+
+    &.user {
+      flex-direction: column;
+      align-items: flex-end;
+    }
+  }
+
+  .content {
+    /* Allow bubble to take up more width on mobile */
+    max-width: 100%;
   }
 }

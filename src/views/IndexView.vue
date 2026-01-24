@@ -146,7 +146,7 @@
 </template>
 
 <script setup lang="ts">
-import { nextTick, ref, watch, onMounted } from "vue";
+import { nextTick, ref, watch, onMounted, onUnmounted } from "vue";
 import { md } from "@/utils";
 import type { ChatMessage } from "@/apis";
 import { MdPreview } from "md-editor-v3";
@@ -172,6 +172,9 @@ const updateTheme = () => {
   }
 };
 
+
+let resizeObserver: ResizeObserver | null = null;
+
 onMounted(() => {
   // Check local storage or system preference
   const savedTheme = localStorage.getItem("theme");
@@ -181,7 +184,21 @@ onMounted(() => {
     isDark.value = window.matchMedia("(prefers-color-scheme: dark)").matches;
   }
   updateTheme();
+
+  if (chatListDom.value && chatPageRef.value) {
+    resizeObserver = new ResizeObserver(() => {
+      if (autoScrollEnabled.value) {
+        scrollToBottom(sending.value ? "auto" : "smooth");
+      }
+    });
+    resizeObserver.observe(chatListDom.value);
+  }
 });
+
+onUnmounted(() => {
+  if (resizeObserver) resizeObserver.disconnect();
+});
+
 
 const sending = ref(false);
 
@@ -249,7 +266,8 @@ const readStream = async (reader, status: number) => {
       appendLastMessageContent(data.content);
       // Smart scroll: Only scroll if autoScroll is enabled
       if (autoScrollEnabled.value) {
-        nextTick(() => scrollToBottom());
+        // Use 'auto' behavior during streaming to prevent visual lag
+        nextTick(() => scrollToBottom("auto"));
       }
     } else {
       messageList.value.pop();
@@ -288,11 +306,11 @@ const handleScroll = (event: Event) => {
 };
 
 // Force scroll to bottom
-const scrollToBottom = () => {
-  if (!chatPageRef.value || !chatListDom.value) return;
+const scrollToBottom = (behavior: ScrollBehavior = "smooth") => {
+  if (!chatPageRef.value) return;
   chatPageRef.value.scrollTo({
-    top: chatListDom.value.scrollHeight,
-    behavior: "smooth",
+    top: chatPageRef.value.scrollHeight,
+    behavior: behavior,
   });
 };
 
