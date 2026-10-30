@@ -151,7 +151,7 @@ import { md } from "@/utils";
 import type { ChatMessage } from "@/apis";
 import { MdPreview } from "md-editor-v3";
 import { sse } from "@/utils/service";
-import { EventSourceParserStream } from "eventsource-parser/stream";
+import { readResponseStream } from "@/utils/responses";
 import { Promotion } from "@element-plus/icons-vue";
 
 const isDark = ref(true);
@@ -207,6 +207,8 @@ const messageContent = ref("");
 
 // placeholder 提示语
 const messageList = ref<ChatMessage[]>([]);
+// Only successful exchanges are sent back as model context.
+const conversation: ChatMessage[] = [];
 
 const placeholder = ref("Type your question here...");
 const loadingMessage = "Thinking...";
@@ -232,47 +234,24 @@ const sendMessage = async (content: string = messageContent.value) => {
     sending.value = true;
     messageList.value.push({ role: "user", content });
     messageContent.value = "";
-    const param = { input: [...messageList.value], stream: true };
+    const param = { input: [...conversation, { role: "user", content }], stream: true };
     messageList.value.push({ role: "assistant", content: loadingMessage });
 
     nextTick(() => scrollToBottom());
 
-    const { body, status } = await sse("/chat", param);
-    if (body) {
-      const reader = body
-        .pipeThrough(new TextDecoderStream())
-        .pipeThrough(new EventSourceParserStream())
-        .getReader();
-
-      await readStream(reader, status);
-    }
+    const response = await sse("/v1/responses", param);
+    let answer = "";
+    await readResponseStream(response, (delta) => {
+      answer += delta;
+      appendLastMessageContent(delta);
+      if (autoScrollEnabled.value) nextTick(() => scrollToBottom("auto"));
+    });
+    if (!answer.trim()) throw new Error("Empty response");
+    conversation.push({ role: "user", content }, { role: "assistant", content: answer });
   } catch (e: any) {
     appendLastMessageContent(errorMessage);
   } finally {
     sending.value = false;
-  }
-};
-
-// 读取流数据
-const readStream = async (reader, status: number) => {
-  /* eslint-disable no-constant-condition*/
-  while (true) {
-    const { value, done } = await reader.read();
-    if (done) break;
-
-    const { data, status, msg } = JSON.parse(value.data);
-    if (status === 1) {
-      if (!data) break;
-      appendLastMessageContent(data.content);
-      // Smart scroll: Only scroll if autoScroll is enabled
-      if (autoScrollEnabled.value) {
-        // Use 'auto' behavior during streaming to prevent visual lag
-        nextTick(() => scrollToBottom("auto"));
-      }
-    } else {
-      messageList.value.pop();
-      throw new Error(msg);
-    }
   }
 };
 

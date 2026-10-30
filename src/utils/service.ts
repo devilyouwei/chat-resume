@@ -171,17 +171,12 @@ const service = createService()
 /** 用于网络请求的方法 */
 export const request = createRequest(service)
 
-export async function sse(url, data = {}, header = {}) {
-  const token = getToken()
-  return await fetch(import.meta.env.VITE_BASE_API + url, {
+// Public Worker endpoint: credentials remain on the server.
+export async function sse(url: string, data = {}) {
+  return fetch(import.meta.env.VITE_BASE_API.replace(/\/$/, '') + url, {
     method: 'POST',
-    // signal: AbortSignal.timeout(15000), // 开启后到达设定时间会中断流式输出
-    headers: {
-      // 携带 Token
-      token: token,
-      'Content-Type': 'application/json',
-      ...header
-    },
+    credentials: 'omit',
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data)
   })
 }
